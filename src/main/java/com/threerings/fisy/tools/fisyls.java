@@ -31,7 +31,7 @@ public class fisyls
     @Usage("Descend into subdirectories and list their contents")
     public boolean recursive;
 
-    @Positional @Usage("URI to read from.")
+    @Positional(0) @Usage("URI to read from.")
     public String filesystem;
 
     @Unmatched

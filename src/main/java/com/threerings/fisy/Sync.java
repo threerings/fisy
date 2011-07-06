@@ -11,13 +11,13 @@ public class Sync
 {
     public static class sync
     {
-        @Positional @Usage("URI to write to.")
+        @Positional(1) @Usage("URI to write to.")
         public String destination;
 
         @Usage("If ranges existing in the destination should be checked against the source")
         public boolean paranoid;
 
-        @Positional @Usage("URI to read from")
+        @Positional(0) @Usage("URI to read from")
         public String source;
     }
 

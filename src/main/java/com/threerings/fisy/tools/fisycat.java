@@ -19,7 +19,7 @@ import com.threerings.fisy.FisyPaths;
 
 public class fisycat
 {
-    @Positional @Usage("The uri to read and print to stdout")
+    @Positional(0) @Usage("The uri to read and print to stdout")
     public String file;
 
     @Unmatched @Usage("Additional uris to read and print to stdout")
