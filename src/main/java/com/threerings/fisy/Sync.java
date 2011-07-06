@@ -24,15 +24,15 @@ public class Sync
     public static void main (String[] args)
     {
         sync parsed = Yarrgs.parseInMain(sync.class, args);
-        FisyDirectory src = FisyPaths.from(parsed.source);
-        FisyPath dest = FisyPaths.from(parsed.destination);
+        Directory src = Paths.from(parsed.source);
+        Path dest = Paths.from(parsed.destination);
         sync(parsed.paranoid, src, dest);
     }
 
-    public static void sync (final boolean paranoid, FisyDirectory src, final FisyPath dest)
+    public static void sync (final boolean paranoid, Directory src, final Path dest)
     {
-        for (final FisyPath item : src) {
-            if (item instanceof FisyDirectory) {
+        for (final Path item : src) {
+            if (item instanceof Directory) {
                 if (!paranoid && item.getName().startsWith("rng")
                     && dest.navigate(item.getPath()).exists()) {
                     continue;
@@ -42,18 +42,18 @@ public class Sync
                         if (!item.getName().endsWith("meta")) {
                             System.out.println("Syncing " + item);
                         }
-                        sync(paranoid, (FisyDirectory)item, dest);
+                        sync(paranoid, (Directory)item, dest);
                     }
                 });
             } else {
-                final FisyFile srcFile = ((FisyFile)item);
-                final FisyFile destFile = dest.open(item.getPath());
+                final Record srcFile = ((Record)item);
+                final Record destFile = dest.open(item.getPath());
                 file.execute(new Runnable() {
                     @Override public void run () {
                         long destLength = -1;
                         try {
                             destLength = destFile.length();
-                        } catch (FisyFileNotFoundException pfnfe) {
+                        } catch (RecordNotFoundException pfnfe) {
                             // Use a not found exception to indicate non-existence rather than
                             // making another possibly remote exists call
                         }
@@ -73,7 +73,7 @@ public class Sync
         }
     }
 
-    public static ExecutorService dir = Executors.newExitingFixedThreadPool("FisypticonDirSync", 5);
+    public static ExecutorService dir = Executors.newExitingFixedThreadPool("FisyDirSync", 5);
 
-    public static ExecutorService file = Executors.newExitingFixedThreadPool("FisypticonFileSync", 10);
+    public static ExecutorService file = Executors.newExitingFixedThreadPool("FisyFileSync", 10);
 }

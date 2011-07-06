@@ -7,19 +7,19 @@ import java.io.File;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Path;
 
 
-public class LocalFisyDirectory extends LocalFisyPath
-    implements FisyDirectory
+public class LocalDirectory extends LocalPath
+    implements Directory
 {
-    public LocalFisyDirectory (File root)
+    public LocalDirectory (File root)
     {
         this(root, root, "/");
     }
 
-    public LocalFisyDirectory (File root, File location, String path)
+    public LocalDirectory (File root, File location, String path)
     {
         super(root, location, path.endsWith("/") ? path : path + "/");
     }
@@ -31,19 +31,19 @@ public class LocalFisyDirectory extends LocalFisyPath
     }
 
     @Override
-    public Iterator<FisyPath> iterator ()
+    public Iterator<Path> iterator ()
     {
         if (!exists()) {
             return Iterators.emptyIterator();
         }
         validate(_location.isDirectory(), "Not a directory", "path", this);
         return Iterators.transform(Iterators.forArray(_location.listFiles()),
-            new Function<File, FisyPath>() {
-                @Override public FisyPath apply (File file) {
+            new Function<File, Path>() {
+                @Override public Path apply (File file) {
                     if (file.isDirectory()) {
-                        return new LocalFisyDirectory(_root, file, _path + file.getName());
+                        return new LocalDirectory(_root, file, _path + file.getName());
                     } else {
-                        return new LocalFisyFile(_root, file, _path + file.getName());
+                        return new LocalRecord(_root, file, _path + file.getName());
                     }
                 }
             });
@@ -52,14 +52,14 @@ public class LocalFisyDirectory extends LocalFisyPath
     @Override
     public void delete ()
     {
-        for (FisyPath path : this) {
+        for (Path path : this) {
             path.delete();
         }
         super.delete();
     }
 
     @Override
-    public void move (FisyDirectory destination)
+    public void move (Directory destination)
     {
         if (!attemptJavaFileRename(destination)) {
             genericMove(this, destination);
@@ -67,7 +67,7 @@ public class LocalFisyDirectory extends LocalFisyPath
     }
 
     @Override
-    public void copy (FisyDirectory destination)
+    public void copy (Directory destination)
     {
         genericCopy(this, destination);
     }

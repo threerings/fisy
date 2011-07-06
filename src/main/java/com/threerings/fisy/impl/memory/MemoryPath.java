@@ -5,34 +5,34 @@ import java.util.HashMap;
 
 import com.google.common.collect.Maps;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.impl.BaseFisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.impl.BasePath;
 
 /**
  * A not terribly efficient in-memory fisy file-system interface, probably only useful for
  *  testing.
  */
-public abstract class MemoryFisyPath extends BaseFisyPath
+public abstract class MemoryPath extends BasePath
 {
-    public MemoryFisyPath (HashMap<String, ByteArrayOutputStream> store, String path)
+    public MemoryPath (HashMap<String, ByteArrayOutputStream> store, String path)
     {
         super(path);
         _store = store;
     }
 
     @Override
-    public FisyDirectory navigate (String path)
+    public Directory navigate (String path)
     {
         String normalized = normalize(path);
-        return new MemoryFisyDirectory(_store, normalized);
+        return new MemoryDirectory(_store, normalized);
     }
 
     @Override
-    public FisyFile open (String path)
+    public Record open (String path)
     {
         String normalized = normalize(path);
-        return new MemoryFisyFile(_store, normalized);
+        return new MemoryRecord(_store, normalized);
     }
 
     @Override
@@ -48,10 +48,10 @@ public abstract class MemoryFisyPath extends BaseFisyPath
     }
 
     /** Creates the root directory for a new fisy filesystem. */
-    public static MemoryFisyDirectory createRoot ()
+    public static MemoryDirectory createRoot ()
     {
         HashMap<String, ByteArrayOutputStream> output = Maps.newHashMap();
-        return new MemoryFisyDirectory(output, "/");
+        return new MemoryDirectory(output, "/");
     }
 
     protected HashMap<String, ByteArrayOutputStream> _store;

@@ -9,21 +9,21 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
-import com.threerings.fisy.FsTestBase;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyPath;
+import com.threerings.fisy.TestBase;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.Path;
 import com.threerings.fisy.impl.local.LocalFSTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class S3FSTest extends FsTestBase
+public class S3FSTest extends TestBase
 {
     @Test
     public void listMoreThan1000Files ()
         throws IOException, InterruptedException
     {
-        final FisyPath path = getRemote();
+        final Path path = getRemote();
         ExecutorService ex = Executors.newFixedThreadPool(20);
         for (int ii = 0; ii < 1001; ii++) {
             final int jj = ii;
@@ -42,10 +42,10 @@ public class S3FSTest extends FsTestBase
         ex.shutdown();
         assertTrue(ex.awaitTermination(1, TimeUnit.MINUTES));
         int ii = 0;
-        for (FisyPath subpath : getRemote()) {
+        for (Path subpath : getRemote()) {
             assertEquals("The paths should be listed in lexicographical order",
                 String.format("%04d", ii++), subpath.getName());
-            assertTrue(subpath instanceof FisyFile);
+            assertTrue(subpath instanceof Record);
         }
     }
 

@@ -8,12 +8,12 @@ import java.util.HashMap;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.fisy.FisyFile;
+import com.threerings.fisy.Record;
 
-public class MemoryFisyFile extends MemoryFisyPath
-    implements FisyFile
+public class MemoryRecord extends MemoryPath
+    implements Record
 {
-    public MemoryFisyFile (HashMap<String, ByteArrayOutputStream> store, String path)
+    public MemoryRecord (HashMap<String, ByteArrayOutputStream> store, String path)
     {
         super(store, path);
     }
@@ -58,18 +58,18 @@ public class MemoryFisyFile extends MemoryFisyPath
     @Override
     public long getModified ()
     {
-        throw new UnsupportedOperationException("MemoryFisyFile doesn't track modified times");
+        throw new UnsupportedOperationException("MemoryRecord doesn't track modified times");
     }
 
     @Override
-    public void move (FisyFile destination)
+    public void move (Record destination)
     {
         copy(destination);
         delete();
     }
 
     @Override
-    public void copy (FisyFile destination)
+    public void copy (Record destination)
     {
         genericCopy(this, destination);
     }

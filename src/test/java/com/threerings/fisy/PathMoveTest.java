@@ -6,13 +6,13 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
-import com.threerings.fisy.FsTestBase;
+import com.threerings.fisy.TestBase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class FisyPathMoveTest extends FsTestBase
+public class PathMoveTest extends TestBase
 {
     @Test
     public void moveLocalToSameLocal ()
@@ -21,7 +21,7 @@ public class FisyPathMoveTest extends FsTestBase
         testMove(getLocal(), getLocal());
     }
 
-    protected void testMove (FisyPath srcFs, FisyPath destFs)
+    protected void testMove (Path srcFs, Path destFs)
         throws IOException
     {
         testCopy(srcFs, destFs);
@@ -35,7 +35,7 @@ public class FisyPathMoveTest extends FsTestBase
         assertFalse(srcFs.open("dir/file").exists());
     }
 
-    protected void testCopy (FisyPath srcFs, FisyPath destFs)
+    protected void testCopy (Path srcFs, Path destFs)
         throws IOException
     {
         OutputStream out = srcFs.open("cdir/file").write();

@@ -4,8 +4,8 @@ import java.io.InputStream;
 
 import com.google.common.base.Supplier;
 
-import com.threerings.fisy.FisyFileNotFoundException;
-import com.threerings.fisy.FisyIOException;
+import com.threerings.fisy.RecordNotFoundException;
+import com.threerings.fisy.OperationException;
 import com.threerings.s3.client.S3Connection;
 import com.threerings.s3.client.S3Exception;
 import com.threerings.s3.client.S3Metadata;
@@ -20,9 +20,9 @@ import static com.threerings.fisy.Log.log;
  * Provides access to a rooted s3 filesystem. All operations taking a path are relative to that
  * root in the given bucket.
  */
-public class S3FisyFilesystem
+public class S3Filesystem
 {
-    public S3FisyFilesystem (S3Connection connection, String bucket, String root)
+    public S3Filesystem (S3Connection connection, String bucket, String root)
     {
         this.conn = connection;
         this.bucket = bucket;
@@ -94,7 +94,7 @@ public class S3FisyFilesystem
             }});
     }
 
-    public void copyObject (String path, final S3FisyFile dest)
+    public void copyObject (String path, final S3Record dest)
     {
         execute(new S3Op("Copy", path) {
             @Override public void execute () throws S3Exception {
@@ -129,10 +129,10 @@ public class S3FisyFilesystem
                 log.debug("Running s3 operation", "op", fetch);
                 return fetch.fetch();
             } catch (S3Server404Exception nfe) {
-                throw new FisyFileNotFoundException("Couldn't find " + fetch.fullPath, nfe);
+                throw new RecordNotFoundException("Couldn't find " + fetch.fullPath, nfe);
             } catch(S3Exception exception) {
                 if (!exception.isTransient()) {
-                    throw new FisyIOException("Non-transient error encountered from s3",
+                    throw new OperationException("Non-transient error encountered from s3",
                         exception);
                 }
                 // Ramp up from 1 second to 5 minutes between retries after subsequent failures

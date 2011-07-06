@@ -13,10 +13,10 @@ import com.bungleton.yarrgs.Yarrgs;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyPath;
-import com.threerings.fisy.FisyPaths;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.Path;
+import com.threerings.fisy.Paths;
 
 public class fisyls
 {
@@ -39,13 +39,13 @@ public class fisyls
 
     public void execute ()
     {
-        FisyPath root = FisyPaths.from(filesystem);
+        Path root = Paths.from(filesystem);
         for (String path : paths) {
-            FisyDirectory asDir = root.navigate(path);
+            Directory asDir = root.navigate(path);
             if (asDir.exists()) {
                 list(asDir);
             } else {
-                FisyFile asFile = root.open(path);
+                Record asFile = root.open(path);
                 if (asFile.exists()) {
                     print(asFile);
                 } else {
@@ -55,18 +55,18 @@ public class fisyls
         }
     }
 
-    protected void list (FisyDirectory dir)
+    protected void list (Directory dir)
     {
         if (recursive) {
             System.out.println(dir.getPath() + ":");
         }
-        for (FisyFile file : Iterables.filter(dir, FisyFile.class)) {
+        for (Record file : Iterables.filter(dir, Record.class)) {
             print(file);
         }
         if (recursive) {
             System.out.println();
         }
-        for (FisyDirectory subdir : Iterables.filter(dir, FisyDirectory.class)) {
+        for (Directory subdir : Iterables.filter(dir, Directory.class)) {
             if (recursive) {
                 list(subdir);
             } else {
@@ -75,16 +75,16 @@ public class fisyls
         }
     }
 
-    protected void print (FisyPath path)
+    protected void print (Path path)
     {
         if (longFormat) {
-            if (path instanceof FisyDirectory) {
+            if (path instanceof Directory) {
                 System.out.print(DIR_INDICATOR);
             } else {
-                String length = "" + ((FisyFile)path).length();
+                String length = "" + ((Record)path).length();
                 StringBuilder builder = pad(LENGTH_WIDTH - length.length());
                 builder.append(length).append(' ');
-                builder.append(_modifiedFormat.format(new Date(((FisyFile)path).getModified())));
+                builder.append(_modifiedFormat.format(new Date(((Record)path).getModified())));
                 System.out.print(builder.append(' ').toString());
             }
         }

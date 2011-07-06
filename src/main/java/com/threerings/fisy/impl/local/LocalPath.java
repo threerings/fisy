@@ -5,35 +5,35 @@ import java.io.File;
 import com.google.common.base.Preconditions;
 
 import com.samskivert.util.LogBuilder;
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyIOException;
-import com.threerings.fisy.FisyPath;
-import com.threerings.fisy.impl.BaseFisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.OperationException;
+import com.threerings.fisy.Path;
+import com.threerings.fisy.impl.BasePath;
 
-public abstract class LocalFisyPath extends BaseFisyPath
+public abstract class LocalPath extends BasePath
 {
-    public LocalFisyPath (File root, File location, String path)
+    public LocalPath (File root, File location, String path)
     {
         super(path);
         Preconditions.checkArgument(root != null && root.exists(),
-            "LocalFisyDirectory must be given a root that already exists, " + root + " doesn't");
+            "LocalDirectory must be given a root that already exists, " + root + " doesn't");
         _root = root;
         _location = location;
     }
 
     @Override
-    public FisyDirectory navigate (String path)
+    public Directory navigate (String path)
     {
         String normalized = normalize(path);
-        return new LocalFisyDirectory(_root, new File(_root, normalized), normalized);
+        return new LocalDirectory(_root, new File(_root, normalized), normalized);
     }
 
     @Override
-    public FisyFile open (String path)
+    public Record open (String path)
     {
         String normalized = normalize(path);
-        return new LocalFisyFile(_root, new File(_root, normalized), normalized);
+        return new LocalRecord(_root, new File(_root, normalized), normalized);
     }
 
     @Override
@@ -49,18 +49,18 @@ public abstract class LocalFisyPath extends BaseFisyPath
             } else {
                 builder.append("type", "unknown");
             }
-            throw new FisyIOException(builder.toString());
+            throw new OperationException(builder.toString());
         }
     }
 
-    protected boolean attemptJavaFileRename (FisyPath destination)
+    protected boolean attemptJavaFileRename (Path destination)
     {
-        if (destination instanceof LocalFisyPath) {
-            File destLoc = ((LocalFisyPath)destination)._location;
+        if (destination instanceof LocalPath) {
+            File destLoc = ((LocalPath)destination)._location;
             if (!destLoc.getParentFile().exists()) {
                 destLoc.getParentFile().mkdirs();
             }
-            return _location.renameTo(((LocalFisyPath)destination)._location);
+            return _location.renameTo(((LocalPath)destination)._location);
         }
         return false;
     }

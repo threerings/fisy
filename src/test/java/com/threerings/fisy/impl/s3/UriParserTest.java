@@ -13,7 +13,7 @@ public class UriParserTest
     public void testNoPath ()
         throws URISyntaxException
     {
-        S3FisyPath path = S3FisyPath.from(new URI("s3://id:key@some-bucket"));
+        S3Path path = S3Path.from(new URI("s3://id:key@some-bucket"));
         assertEquals("some-bucket", path._fs.bucket);
         assertEquals("", path._fs.root);
     }
@@ -22,7 +22,7 @@ public class UriParserTest
     public void testEmptyRoot ()
         throws URISyntaxException
     {
-        S3FisyPath path = S3FisyPath.from(new URI("s3://id:key@some-bucket/"));
+        S3Path path = S3Path.from(new URI("s3://id:key@some-bucket/"));
         assertEquals("some-bucket", path._fs.bucket);
         assertEquals("", path._fs.root);
     }
@@ -31,7 +31,7 @@ public class UriParserTest
     public void testWithRoot ()
         throws URISyntaxException
     {
-        S3FisyPath path = S3FisyPath.from(new URI("s3://id:key@adifferentbucket/root_path/blah/"));
+        S3Path path = S3Path.from(new URI("s3://id:key@adifferentbucket/root_path/blah/"));
         assertEquals("adifferentbucket", path._fs.bucket);
         assertEquals("root_path/blah/", path._fs.root);
     }
@@ -41,10 +41,10 @@ public class UriParserTest
         throws URISyntaxException
     {
         URI uri = new URI("s3://id:abcd%2F1234@some-bucket/");
-        S3FisyPath path = S3FisyPath.from(uri);
+        S3Path path = S3Path.from(uri);
         assertEquals("some-bucket", path._fs.bucket);
         assertEquals("", path._fs.root);
-        String[] idAndKey = S3FisyPath.extractIdAndKey(uri);
+        String[] idAndKey = S3Path.extractIdAndKey(uri);
         assertEquals("id", idAndKey[0]);
         assertEquals("abcd/1234", idAndKey[1]);
     }
@@ -53,7 +53,7 @@ public class UriParserTest
     public void testNoUserInfo ()
         throws URISyntaxException
     {
-        S3FisyPath.from(new URI("s3://some-bucket/"));
+        S3Path.from(new URI("s3://some-bucket/"));
     }
 
 
@@ -61,7 +61,7 @@ public class UriParserTest
     public void testPartialUserInfo ()
         throws URISyntaxException
     {
-        S3FisyPath.from(new URI("s3://id@some-bucket/"));
+        S3Path.from(new URI("s3://id@some-bucket/"));
     }
 
 
@@ -69,6 +69,6 @@ public class UriParserTest
     public void testNoBucket ()
         throws URISyntaxException
     {
-        S3FisyPath.from(new URI("s3://id:1234@/"));
+        S3Path.from(new URI("s3://id:1234@/"));
     }
 }

@@ -12,10 +12,10 @@ import com.bungleton.yarrgs.Yarrgs;
 
 import com.samskivert.io.StreamUtil;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyPath;
-import com.threerings.fisy.FisyPaths;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.Path;
+import com.threerings.fisy.Paths;
 
 public class fisycat
 {
@@ -29,23 +29,23 @@ public class fisycat
         throws IOException
     {
         fisycat parsed = Yarrgs.parseInMain(fisycat.class, args);
-        dump(FisyPaths.from(parsed.file));
+        dump(Paths.from(parsed.file));
         for (String file : parsed.files) {
-            dump(FisyPaths.from(file));
+            dump(Paths.from(file));
         }
     }
 
-    protected static void dump (FisyPath file)
+    protected static void dump (Path file)
         throws IOException
     {
         if (!file.exists()) {
-            if (file instanceof FisyDirectory) {
+            if (file instanceof Directory) {
                 System.err.println("'" + file + "' is a directory, not a file");
             } else {
                 System.err.println("'" + file + "' doesn't exist");
             }
         } else {
-            StreamUtil.copy(((FisyFile)file).read(), System.out);
+            StreamUtil.copy(((Record)file).read(), System.out);
         }
     }
 }

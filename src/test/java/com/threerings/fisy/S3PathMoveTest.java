@@ -3,7 +3,7 @@ package com.threerings.fisy;
 import java.io.IOException;
 import org.junit.Test;
 
-public class S3FisyPathMoveTest extends FisyPathMoveTest
+public class S3PathMoveTest extends PathMoveTest
 {
     @Test
     public void moveLocalToS3 ()
@@ -23,7 +23,7 @@ public class S3FisyPathMoveTest extends FisyPathMoveTest
     public void moveS3ToDifferentS3 ()
         throws IOException
     {
-        testMove(getRemote(), createRemote(FisyPaths.TEST_S3_URI_FILE));
+        testMove(getRemote(), createRemote(Paths.TEST_S3_URI_FILE));
     }
 
     @Test

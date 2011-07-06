@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class FisyFileSystemTest extends FsTestBase
+public class IntegrationTest extends TestBase
 {
     @Test
     public void exerciseLocal ()
@@ -28,13 +28,13 @@ public class FisyFileSystemTest extends FsTestBase
         exercise(getRemote());
     }
 
-    public void exercise (FisyPath root)
+    public void exercise (Path root)
         throws IOException
     {
-        FisyDirectory eventDir = root.navigate("events/eventname/eventid");
+        Directory eventDir = root.navigate("events/eventname/eventid");
         assertFalse("Navigating to a directory shouldn't create it", eventDir.exists());
 
-        FisyFile file = eventDir.open("column");
+        Record file = eventDir.open("column");
         assertFalse("Opening a file shouldn't create its directory", eventDir.exists());
         assertFalse("Opening a file shouldn't create it", file.exists());
         writeOneByte(file, file.write(), 27);
@@ -43,15 +43,15 @@ public class FisyFileSystemTest extends FsTestBase
             "/events/", Iterables.getOnlyElement(root.navigate("/")).getPath());
 
         writeOneByte(file, file.overwrite(), 42);
-        FisyFile otherColumn = file.open("../otherEventId/column");
+        Record otherColumn = file.open("../otherEventId/column");
         otherColumn.write().close();
         assertTrue(otherColumn.exists());
         otherColumn.delete();
         assertFalse(otherColumn.exists());
         try {
             otherColumn.length();
-            assertTrue("Calling length on a non-existent file should throw FisyNotFound", false);
-        } catch (FisyFileNotFoundException pnfe) {}
+            assertTrue("Calling length on a non-existent file should throw RecordNotFound", false);
+        } catch (RecordNotFoundException pnfe) {}
         assertTrue(otherColumn.navigate("../..").exists());
         assertTrue(otherColumn.navigate("/").exists());
         root.delete();
@@ -60,7 +60,7 @@ public class FisyFileSystemTest extends FsTestBase
             file.exists());
     }
 
-    protected void writeOneByte (FisyFile file, OutputStream out, int value)
+    protected void writeOneByte (Record file, OutputStream out, int value)
         throws IOException
     {
         out.write(value);

@@ -8,11 +8,11 @@ import java.net.URISyntaxException;
 
 import com.samskivert.io.StreamUtil;
 import com.samskivert.util.RandomUtil;
-import com.threerings.fisy.impl.local.LocalFisyDirectory;
-import com.threerings.fisy.impl.local.LocalFisyPath;
-import com.threerings.fisy.impl.s3.S3FisyPath;
+import com.threerings.fisy.impl.local.LocalDirectory;
+import com.threerings.fisy.impl.local.LocalPath;
+import com.threerings.fisy.impl.s3.S3Path;
 
-public class FisyPaths
+public class Paths
 {
     /**
      * The location of the default test s3 URI file on the classpath.
@@ -20,10 +20,10 @@ public class FisyPaths
     public static final String TEST_S3_URI_FILE = "/test.s3connection";
 
     /**
-     * Creates a FisyPath based on the given URI.<p>
+     * Creates a Path based on the given URI.<p>
      *
-     * If the URI doesn't start with a scheme, or has the file:// scheme, a {@link LocalFisyPath}
-     * is created rooted at the location in the URI eg <code>file:///FisypticonStore</code>.<p>
+     * If the URI doesn't start with a scheme, or has the file:// scheme, a {@link LocalPath}
+     * is created rooted at the location in the URI eg <code>file:///FisyStore</code>.<p>
      *
      * If the URI uses the s3 scheme, an s3 path of the form <code>s3://&lt;AWS ID>:&lt;AWS
      * Key>@&lt;Bucket name>[Root path]</code> is expected eg
@@ -32,7 +32,7 @@ public class FisyPaths
      * If the URI is malformed, lacks information needed by the particular path or is using a
      * scheme other than s3 or file, an IllegalArgumentException will be thrown.
      */
-    public static FisyDirectory from (String pathUri)
+    public static Directory from (String pathUri)
     {
         URI uri;
         try {
@@ -49,11 +49,11 @@ public class FisyPaths
         }
 
         if (uri.getScheme().equals("file")) {
-            return new LocalFisyDirectory(new File(uri));
+            return new LocalDirectory(new File(uri));
         } else if(uri.getScheme().equals("s3")) {
-            return S3FisyPath.from(uri);
+            return S3Path.from(uri);
         }
-        throw new IllegalArgumentException("Unknown FisyPath URI scheme [scheme="
+        throw new IllegalArgumentException("Unknown Path URI scheme [scheme="
             + uri.getScheme() + ", uri=" + pathUri + "]");
     }
 
@@ -61,36 +61,36 @@ public class FisyPaths
      * Makes a local fisy filesystem in a newly created random directory in the temp
      * directory.
      */
-    public static FisyDirectory makeTempFs ()
+    public static Directory makeTempFs ()
     {
         File rootFile = new File(System.getProperty("java.io.tmpdir"), "fisy"
             + RandomUtil.rand.nextLong());
         rootFile.mkdir();
-        return new LocalFisyDirectory(rootFile);
+        return new LocalDirectory(rootFile);
     }
 
     /**
-     * Makes an s3 FisyPath with a random root in with the uri from test.s3connection on the
+     * Makes an s3 Path with a random root in with the uri from test.s3connection on the
      * classpath. If test.s3conection can't be found, returns null.
      */
-    public static FisyDirectory makeTestS3Fs ()
+    public static Directory makeTestS3Fs ()
         throws IOException
     {
         return makeTestS3Fs(TEST_S3_URI_FILE);
     }
 
     /**
-     * Makes an s3 FisyPath with a random root in with the uri from the given file on the
+     * Makes an s3 Path with a random root in with the uri from the given file on the
      * classpath. If the file can't be found, returns null.
      */
-    public static FisyDirectory makeTestS3Fs (String connectionClasspathLoc)
+    public static Directory makeTestS3Fs (String connectionClasspathLoc)
         throws IOException
     {
         String uri = makeTestS3Uri(connectionClasspathLoc);
         if (uri == null) {
             return null;
         }
-        return FisyPaths.from(uri);
+        return Paths.from(uri);
     }
 
     /**
@@ -110,7 +110,7 @@ public class FisyPaths
     public static String loadTestS3Uri (String connectionClasspathLoc)
         throws IOException
     {
-        InputStream stream = FisyPaths.class.getResourceAsStream(connectionClasspathLoc);
+        InputStream stream = Paths.class.getResourceAsStream(connectionClasspathLoc);
         if (stream == null) {
             return null;
         }

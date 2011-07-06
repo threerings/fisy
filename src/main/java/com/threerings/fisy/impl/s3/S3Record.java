@@ -15,14 +15,14 @@ import java.security.NoSuchAlgorithmException;
 
 import com.google.common.base.Supplier;
 
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyIOException;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.OperationException;
 import com.threerings.s3.client.S3ClientException;
 
-public class S3FisyFile extends S3FisyPath
-    implements FisyFile
+public class S3Record extends S3Path
+    implements Record
 {
-    public S3FisyFile (S3FisyFilesystem fs, String path)
+    public S3Record (S3Filesystem fs, String path)
     {
         super(fs, path);
     }
@@ -41,7 +41,7 @@ public class S3FisyFile extends S3FisyPath
             local = File.createTempFile("s3fisy", null);
             localOut = new BufferedOutputStream(new FileOutputStream(local));
         } catch (IOException e) {
-            throw new FisyIOException("Unable to create temp file to upload to s3", e);
+            throw new OperationException("Unable to create temp file to upload to s3", e);
         }
         return new FilterOutputStream(localOut) {
             @Override public void write (byte[] b) throws IOException {
@@ -68,7 +68,7 @@ public class S3FisyFile extends S3FisyPath
                         try {
                             is = new FileInputStream(local);
                         } catch (FileNotFoundException e) {
-                            throw new FisyIOException("Unable to open " + local + " for reading", e);
+                            throw new OperationException("Unable to open " + local + " for reading", e);
                         }
                         return new BufferedInputStream(is);
                     }};
@@ -88,7 +88,7 @@ public class S3FisyFile extends S3FisyPath
         }
     }
 
-    public void upload (final FisyFile location)
+    public void upload (final Record location)
         throws IOException
     {
         MessageDigest md = createMD5();
@@ -112,7 +112,7 @@ public class S3FisyFile extends S3FisyPath
         } catch (S3ClientException e) {
             // At the time of writing, this only happens if a S3FileObject is unable to open its
             // underlying file.  Reading from s3 doesn't throw exceptions here.
-            throw new FisyIOException("Unable to get file from s3 " + this, e);
+            throw new OperationException("Unable to get file from s3 " + this, e);
         }
     }
 
@@ -141,17 +141,17 @@ public class S3FisyFile extends S3FisyPath
     }
 
     @Override
-    public void move (FisyFile destination)
+    public void move (Record destination)
     {
         copy(destination);
         delete();
     }
 
     @Override
-    public void copy (FisyFile destination)
+    public void copy (Record destination)
     {
-        if (destination instanceof S3FisyFile) {
-            _fs.copyObject(_path, ((S3FisyFile)destination));
+        if (destination instanceof S3Record) {
+            _fs.copyObject(_path, ((S3Record)destination));
         } else {
             genericCopy(this, destination);
         }

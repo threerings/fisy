@@ -2,20 +2,20 @@ package com.threerings.fisy.impl.local;
 
 import org.junit.Test;
 
-import com.threerings.fisy.FsTestBase;
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
+import com.threerings.fisy.TestBase;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
 import static org.junit.Assert.assertFalse;
 
-public class LocalFSTest extends FsTestBase
+public class LocalFSTest extends TestBase
 {
-    public static void deleteNonexistent (FisyDirectory base)
+    public static void deleteNonexistent (Directory base)
     {
-        FisyDirectory subDir = base.navigate("subd");
+        Directory subDir = base.navigate("subd");
         assertFalse(subDir.exists());
         subDir.delete();
         assertFalse(subDir.exists());
-        FisyFile file = base.open("file");
+        Record file = base.open("file");
         assertFalse(file.exists());
         file.delete();
         assertFalse(file.exists());

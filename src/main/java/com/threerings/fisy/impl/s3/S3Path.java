@@ -7,21 +7,21 @@ import com.google.common.base.Preconditions;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.impl.BaseFisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.impl.BasePath;
 import com.threerings.s3.client.S3Connection;
 
-public abstract class S3FisyPath extends BaseFisyPath
+public abstract class S3Path extends BasePath
 {
-    public static S3FisyDirectory from (URI uri)
+    public static S3Directory from (URI uri)
     {
         String[] idAndKey = extractIdAndKey(uri);
         String bucket = uri.getHost();
         String root = uri.getPath();
         // Cut the timeout back to 30 seconds for our connection
         S3Connection conn = new S3Connection(idAndKey[0], idAndKey[1], 30 * 1000);
-        return new S3FisyDirectory(new S3FisyFilesystem(conn, bucket, root), "");
+        return new S3Directory(new S3Filesystem(conn, bucket, root), "");
     }
 
     // id and key extraction is separated from the main uri parsing method to allow it to be tested
@@ -38,7 +38,7 @@ public abstract class S3FisyPath extends BaseFisyPath
         return idAndKey;
     }
 
-    public S3FisyPath(S3FisyFilesystem fs, String path) {
+    public S3Path(S3Filesystem fs, String path) {
         super(path);
         _fs = fs;
     }
@@ -50,15 +50,15 @@ public abstract class S3FisyPath extends BaseFisyPath
     }
 
     @Override
-    public FisyDirectory navigate (String path)
+    public Directory navigate (String path)
     {
-        return new S3FisyDirectory(_fs, normalize(path));
+        return new S3Directory(_fs, normalize(path));
     }
 
     @Override
-    public FisyFile open (String path)
+    public Record open (String path)
     {
-        return new S3FisyFile(_fs, normalize(path));
+        return new S3Record(_fs, normalize(path));
     }
 
     @Override
@@ -67,5 +67,5 @@ public abstract class S3FisyPath extends BaseFisyPath
         return "s3://" + _fs.bucket + "/" + _fs.makeFullPath(_path);
     }
 
-    protected final S3FisyFilesystem _fs;
+    protected final S3Filesystem _fs;
 }

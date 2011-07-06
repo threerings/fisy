@@ -9,20 +9,20 @@ import com.samskivert.io.StreamUtil;
 import com.samskivert.util.Logger;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyFileExistsException;
-import com.threerings.fisy.FisyFileNotFoundException;
-import com.threerings.fisy.FisyIOException;
-import com.threerings.fisy.FisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.RecordExistsException;
+import com.threerings.fisy.RecordNotFoundException;
+import com.threerings.fisy.OperationException;
+import com.threerings.fisy.Path;
 
 /**
- * Implements path name manipulation for a FisyPath, but no underlying filesystem operations.
+ * Implements path name manipulation for a Path, but no underlying filesystem operations.
  */
-public abstract class BaseFisyPath
-    implements FisyPath
+public abstract class BasePath
+    implements Path
 {
-    public BaseFisyPath (String path)
+    public BasePath (String path)
     {
         _path = path;
     }
@@ -59,12 +59,14 @@ public abstract class BaseFisyPath
         return _path;
     }
 
+    @Override
     public String getName ()
     {
         String[] segs = getSegments();
         return segs[segs.length - 1];
     }
 
+    @Override
     public String[] getSegments ()
     {
         if (_path.equals("/")) {
@@ -77,57 +79,57 @@ public abstract class BaseFisyPath
         return StringUtil.split(_path.substring(1, lastIdx), "/");
     }
 
-    protected static OutputStream write (FisyFile file)
+    protected static OutputStream write (Record file)
     {
         if (file.exists()) {
-            throw new FisyFileExistsException(file + " already exists");
+            throw new RecordExistsException(file + " already exists");
         }
         return file.overwrite();
     }
 
-    protected static void genericMove (FisyDirectory src, FisyDirectory dest)
+    protected static void genericMove (Directory src, Directory dest)
     {
-        for (FisyPath path : src) {
-            if (path instanceof FisyDirectory) {
-                ((FisyDirectory)path).move(dest.navigate(path.getName()));
+        for (Path path : src) {
+            if (path instanceof Directory) {
+                ((Directory)path).move(dest.navigate(path.getName()));
             } else {
-                ((FisyFile)path).move(dest.open(path.getName()));
+                ((Record)path).move(dest.open(path.getName()));
             }
         }
         src.delete();
     }
 
-    protected static void genericCopy (FisyDirectory src, FisyDirectory dest)
+    protected static void genericCopy (Directory src, Directory dest)
     {
-        for (FisyPath path : src) {
-            if (path instanceof FisyDirectory) {
-                ((FisyDirectory)path).copy(dest.navigate(path.getName()));
+        for (Path path : src) {
+            if (path instanceof Directory) {
+                ((Directory)path).copy(dest.navigate(path.getName()));
             } else {
-                ((FisyFile)path).copy(dest.open(path.getName()));
+                ((Record)path).copy(dest.open(path.getName()));
             }
         }
     }
 
-    protected static void genericCopy (FisyFile src, FisyFile dest)
+    protected static void genericCopy (Record src, Record dest)
     {
         try {
             StreamUtil.copy(src.read(), dest.overwrite()).close();
         } catch (IOException e) {
-            throw new FisyIOException("Unable to move " + dest + " to " + src, e);
+            throw new OperationException("Unable to move " + dest + " to " + src, e);
         }
     }
 
     public static void validate (boolean condition, String message, Object... args)
     {
         if (!condition) {
-            throw new FisyIOException(Logger.format(message, args));
+            throw new OperationException(Logger.format(message, args));
         }
     }
 
     protected void validateFileExists ()
     {
         if (!exists()) {
-            throw new FisyFileNotFoundException("File doesn't exist: " + this);
+            throw new RecordNotFoundException("File doesn't exist: " + this);
         }
     }
 

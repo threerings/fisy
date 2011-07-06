@@ -8,19 +8,19 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 
-import com.threerings.fisy.FisyDirectory;
-import com.threerings.fisy.FisyPath;
+import com.threerings.fisy.Directory;
+import com.threerings.fisy.Path;
 
-public class MemoryFisyDirectory extends MemoryFisyPath
-    implements FisyDirectory
+public class MemoryDirectory extends MemoryPath
+    implements Directory
 {
-    public MemoryFisyDirectory (HashMap<String, ByteArrayOutputStream> store, String path)
+    public MemoryDirectory (HashMap<String, ByteArrayOutputStream> store, String path)
     {
         super(store, path.endsWith("/") ? path : path + "/");
     }
 
     @Override
-    public Iterator<FisyPath> iterator ()
+    public Iterator<Path> iterator ()
     {
         if (!exists()) {
             return Iterators.emptyIterator();
@@ -36,25 +36,25 @@ public class MemoryFisyDirectory extends MemoryFisyPath
                     return (nextSlash == -1 || nextSlash == (path.length() - 1));
                 }
             }),
-                new Function<String, FisyPath>() {
-                    @Override public FisyPath apply (String path) {
+                new Function<String, Path>() {
+                    @Override public Path apply (String path) {
                         if (path.endsWith("/")) {
-                            return new MemoryFisyDirectory(_store, path);
+                            return new MemoryDirectory(_store, path);
                         } else {
-                            return new MemoryFisyFile(_store, path);
+                            return new MemoryRecord(_store, path);
                         }
                     }
                 });
     }
 
     @Override
-    public void move (FisyDirectory destination)
+    public void move (Directory destination)
     {
         genericMove(this, destination);
     }
 
     @Override
-    public void copy (FisyDirectory destination)
+    public void copy (Directory destination)
     {
         genericCopy(this, destination);
     }

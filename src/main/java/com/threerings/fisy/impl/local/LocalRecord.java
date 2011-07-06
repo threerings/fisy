@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.threerings.fisy.FisyFile;
-import com.threerings.fisy.FisyIOException;
-import com.threerings.fisy.impl.s3.S3FisyFile;
+import com.threerings.fisy.Record;
+import com.threerings.fisy.OperationException;
+import com.threerings.fisy.impl.s3.S3Record;
 
-public class LocalFisyFile extends LocalFisyPath
-    implements FisyFile
+public class LocalRecord extends LocalPath
+    implements Record
 {
-    public LocalFisyFile (File root, File location, String path)
+    public LocalRecord (File root, File location, String path)
     {
         super(root, location, path);
     }
@@ -36,7 +36,7 @@ public class LocalFisyFile extends LocalFisyPath
         try {
             os = new FileOutputStream(_location);
         } catch (FileNotFoundException e) {
-            throw new FisyIOException("Unable to open " + _location + " for writing", e);
+            throw new OperationException("Unable to open " + _location + " for writing", e);
         }
         return new BufferedOutputStream(os);
     }
@@ -62,7 +62,7 @@ public class LocalFisyFile extends LocalFisyPath
         try {
             is = new FileInputStream(_location);
         } catch (FileNotFoundException e) {
-            throw new FisyIOException("Unable to open " + _location + " for reading", e);
+            throw new OperationException("Unable to open " + _location + " for reading", e);
         }
         return new BufferedInputStream(is);
     }
@@ -82,7 +82,7 @@ public class LocalFisyFile extends LocalFisyPath
     }
 
     @Override
-    public void move (FisyFile destination)
+    public void move (Record destination)
     {
         if (!attemptJavaFileRename(destination)) {
             copy(destination);
@@ -91,13 +91,13 @@ public class LocalFisyFile extends LocalFisyPath
     }
 
     @Override
-    public void copy (FisyFile destination)
+    public void copy (Record destination)
     {
-        if (destination instanceof S3FisyFile) {
+        if (destination instanceof S3Record) {
             try {
-                ((S3FisyFile)destination).upload(this);
+                ((S3Record)destination).upload(this);
             } catch (IOException e) {
-                throw new FisyIOException("Unable to move file to s3", e);
+                throw new OperationException("Unable to move file to s3", e);
             }
         } else {
             genericCopy(this, destination);
