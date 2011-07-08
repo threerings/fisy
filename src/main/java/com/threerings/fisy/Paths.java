@@ -10,6 +10,7 @@ import com.samskivert.io.StreamUtil;
 import com.samskivert.util.RandomUtil;
 import com.threerings.fisy.impl.local.LocalDirectory;
 import com.threerings.fisy.impl.local.LocalPath;
+import com.threerings.fisy.impl.memory.MemoryDirectory;
 import com.threerings.fisy.impl.s3.S3Path;
 
 public class Paths
@@ -67,6 +68,11 @@ public class Paths
             + RandomUtil.rand.nextLong());
         rootFile.mkdir();
         return new LocalDirectory(rootFile);
+    }
+
+    public static Directory makeMemoryFs ()
+    {
+        return MemoryDirectory.createRoot();
     }
 
     /**
