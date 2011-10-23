@@ -23,12 +23,12 @@ public abstract class LocalPath extends BasePath
 
     public File file () { return _location; }
 
-    @Override public Directory navigate (String path) {
+    @Override public LocalDirectory navigate (String path) {
         String normalized = normalize(path);
         return new LocalDirectory(_root, new File(_root, normalized), normalized);
     }
 
-    @Override public Record open (String path) {
+    @Override public LocalRecord open (String path) {
         String normalized = normalize(path);
         return new LocalRecord(_root, new File(_root, normalized), normalized);
     }
