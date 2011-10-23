@@ -17,14 +17,11 @@ import com.threerings.fisy.impl.s3.S3Record;
 public class LocalRecord extends LocalPath
     implements Record
 {
-    public LocalRecord (File root, File location, String path)
-    {
+    public LocalRecord (File root, File location, String path) {
         super(root, location, path);
     }
 
-    @Override
-    public OutputStream overwrite ()
-    {
+    @Override public OutputStream overwrite () {
         File parent = _location.getParentFile();
         if (!parent.exists()) {
             // Try to create the directory, and if that fails check if it hasn't been made into a
@@ -41,22 +38,14 @@ public class LocalRecord extends LocalPath
         return new BufferedOutputStream(os);
     }
 
-    @Override
-    public boolean exists ()
-    {
-        return _location.isFile();
-    }
+    @Override public boolean exists () { return _location.isFile(); }
 
-    @Override
-    public long getModified ()
-    {
+    @Override public long getModified () {
         validateFileExists();
         return _location.lastModified();
     }
 
-    @Override
-    public InputStream read ()
-    {
+    @Override public InputStream read () {
         validateFileExists();
         InputStream is;
         try {
@@ -67,32 +56,22 @@ public class LocalRecord extends LocalPath
         return new BufferedInputStream(is);
     }
 
-    @Override
-    public OutputStream write ()
-    {
-        return write(this);
-    }
+    @Override public OutputStream write () { return write(this); }
 
-    @Override
-    public long length ()
-    {
+    @Override public long length () {
         validateFileExists();
         validate(!_location.isDirectory(), "Can't get length on a directory", "path", this);
         return _location.length();
     }
 
-    @Override
-    public void move (Record destination)
-    {
+    @Override public void move (Record destination) {
         if (!attemptJavaFileRename(destination)) {
             copy(destination);
             delete();
         }
     }
 
-    @Override
-    public void copy (Record destination)
-    {
+    @Override public void copy (Record destination) {
         if (destination instanceof S3Record) {
             try {
                 ((S3Record)destination).upload(this);

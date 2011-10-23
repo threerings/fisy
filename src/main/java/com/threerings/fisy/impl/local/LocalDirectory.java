@@ -14,25 +14,19 @@ import com.threerings.fisy.Path;
 public class LocalDirectory extends LocalPath
     implements Directory
 {
-    public LocalDirectory (File root)
-    {
+    public LocalDirectory (File root) {
         this(root, root, "/");
     }
 
-    public LocalDirectory (File root, File location, String path)
-    {
+    public LocalDirectory (File root, File location, String path) {
         super(root, location, path.endsWith("/") ? path : path + "/");
     }
 
-    @Override
-    public boolean exists ()
-    {
+    @Override public boolean exists () {
         return _location.isDirectory();
     }
 
-    @Override
-    public Iterator<Path> iterator ()
-    {
+    @Override public Iterator<Path> iterator () {
         if (!exists()) {
             return Iterators.emptyIterator();
         }
@@ -49,26 +43,20 @@ public class LocalDirectory extends LocalPath
             });
     }
 
-    @Override
-    public void delete ()
-    {
+    @Override public void delete () {
         for (Path path : this) {
             path.delete();
         }
         super.delete();
     }
 
-    @Override
-    public void move (Directory destination)
-    {
+    @Override public void move (Directory destination) {
         if (!attemptJavaFileRename(destination)) {
             genericMove(this, destination);
         }
     }
 
-    @Override
-    public void copy (Directory destination)
-    {
+    @Override public void copy (Directory destination) {
         genericCopy(this, destination);
     }
 }

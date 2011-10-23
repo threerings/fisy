@@ -13,8 +13,7 @@ import com.threerings.fisy.impl.BasePath;
 
 public abstract class LocalPath extends BasePath
 {
-    public LocalPath (File root, File location, String path)
-    {
+    public LocalPath (File root, File location, String path) {
         super(path);
         Preconditions.checkArgument(root != null && root.exists(),
             "LocalDirectory must be given a root that already exists, " + root + " doesn't");
@@ -22,23 +21,17 @@ public abstract class LocalPath extends BasePath
         _location = location;
     }
 
-    @Override
-    public Directory navigate (String path)
-    {
+    @Override public Directory navigate (String path) {
         String normalized = normalize(path);
         return new LocalDirectory(_root, new File(_root, normalized), normalized);
     }
 
-    @Override
-    public Record open (String path)
-    {
+    @Override public Record open (String path) {
         String normalized = normalize(path);
         return new LocalRecord(_root, new File(_root, normalized), normalized);
     }
 
-    @Override
-    public void delete ()
-    {
+    @Override public void delete () {
         if (exists() && !_location.delete()) {
             LogBuilder builder = new LogBuilder("Unable to delete", "path",
                 _location.getAbsolutePath(), "canWrite", _location.canWrite(), "exists", exists());
@@ -53,8 +46,7 @@ public abstract class LocalPath extends BasePath
         }
     }
 
-    protected boolean attemptJavaFileRename (Path destination)
-    {
+    protected boolean attemptJavaFileRename (Path destination) {
         if (destination instanceof LocalPath) {
             File destLoc = ((LocalPath)destination)._location;
             if (!destLoc.getParentFile().exists()) {
@@ -65,10 +57,7 @@ public abstract class LocalPath extends BasePath
         return false;
     }
 
-    @Override
-    public String toString() {
-        return _location.getAbsolutePath();
-    }
+    @Override public String toString() { return _location.getAbsolutePath(); }
 
     protected final File _root, _location;
 }

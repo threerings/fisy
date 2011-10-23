@@ -14,8 +14,7 @@ public interface Directory
      * empty Iterator will be returned. If something other than a directory exists here or if an
      * error occurs in the underlying IO operations, an OperationException will be raised.
      */
-    @Override
-    Iterator<Path> iterator ();
+    @Override Iterator<Path> iterator ();
 
     void move (Directory destination);
 
