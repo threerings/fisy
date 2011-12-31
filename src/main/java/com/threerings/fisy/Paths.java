@@ -62,7 +62,7 @@ public class Paths
      * Makes a local fisy filesystem in a newly created random directory in the temp
      * directory.
      */
-    public static Directory makeTempFs ()
+    public static LocalDirectory makeTempFs ()
     {
         File rootFile = new File(System.getProperty("java.io.tmpdir"), "fisy"
             + RandomUtil.rand.nextLong());
