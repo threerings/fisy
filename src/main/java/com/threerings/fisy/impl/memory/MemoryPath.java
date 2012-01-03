@@ -54,5 +54,7 @@ public abstract class MemoryPath extends BasePath
         return new MemoryDirectory(output, "/");
     }
 
+    @Override public String toString() { return "mem:" + _path; }
+
     protected HashMap<String, ByteArrayOutputStream> _store;
 }
